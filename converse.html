@@ -25,7 +25,7 @@
             color: white;
         }
 
-        /* WhatsApp-like Sidebar */
+        /* Sidebar */
         .sidebar {
             width: 30%;
             max-width: 400px;
@@ -348,11 +348,6 @@
             background: #008f70;
         }
 
-        .send-btn:disabled {
-            background: #2a3942;
-            cursor: not-allowed;
-        }
-
         /* Welcome Screen */
         .welcome-screen {
             flex: 1;
@@ -475,6 +470,34 @@
             font-size: 14px;
         }
 
+        /* Profile Menu */
+        .profile-menu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 10px;
+            background: #233138;
+            border-radius: 8px;
+            padding: 8px;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .profile-menu-item {
+            padding: 12px 16px;
+            color: #e9edef;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-menu-item:hover {
+            background: #2a3942;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -515,10 +538,6 @@
             border-radius: 3px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #455a64;
-        }
-
         .hidden {
             display: none;
         }
@@ -528,7 +547,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-avatar" id="userAvatar" onclick="toggleProfileMenu()">U</div>
             <div class="header-actions">
                 <button class="header-btn" title="Status">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -540,11 +559,27 @@
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
                 </button>
-                <button class="header-btn" title="Menu" onclick="logout()">
+                <button class="header-btn" title="Menu" onclick="toggleProfileMenu()">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
                     </svg>
                 </button>
+            </div>
+        </div>
+
+        <!-- Profile Menu -->
+        <div class="profile-menu" id="profileMenu">
+            <div class="profile-menu-item" onclick="viewProfile()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                Profile
+            </div>
+            <div class="profile-menu-item" onclick="logout()" style="color: #ff4444;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                </svg>
+                Logout
             </div>
         </div>
 
@@ -553,7 +588,6 @@
         </div>
 
         <div class="chat-list" id="chatList">
-            <!-- Chats will be loaded here -->
             <div class="no-chats" style="text-align: center; padding: 40px 20px; color: #8696a0;">
                 <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
                 <h3 style="margin-bottom: 8px; color: #e9edef;">No chats yet</h3>
@@ -671,12 +705,7 @@
         };
 
         // Initialize Firebase
-        try {
-            firebase.initializeApp(firebaseConfig);
-        } catch (error) {
-            console.log('Firebase already initialized');
-        }
-        
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -747,13 +776,6 @@
                 chatList.innerHTML = '';
 
                 if (chatsSnapshot.empty) {
-                    chatList.innerHTML = `
-                        <div class="no-chats" style="text-align: center; padding: 40px 20px; color: #8696a0;">
-                            <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
-                            <h3 style="margin-bottom: 8px; color: #e9edef;">No chats yet</h3>
-                            <p>Start a conversation by clicking the + button</p>
-                        </div>
-                    `;
                     return;
                 }
 
@@ -820,9 +842,6 @@
             
             // Load messages
             await loadMessages(chatId);
-            
-            // Mark messages as read
-            await markMessagesAsRead(chatId);
 
             // Mobile responsive
             if (window.innerWidth <= 768) {
@@ -908,26 +927,41 @@
             }
         }
 
-        // Mark messages as read
-        async function markMessagesAsRead(chatId) {
+        // Toggle profile menu
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profileMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // View profile
+        function viewProfile() {
+            const userDoc = db.collection('users').doc(currentUser.uid);
+            userDoc.get().then(doc => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    alert(`Profile:\nName: ${userData.firstName} ${userData.lastName}\nEmail: ${userData.email}\nUsername: @${userData.username}`);
+                }
+            });
+            toggleProfileMenu();
+        }
+
+        // Logout - FIXED WORKING VERSION
+        async function logout() {
             try {
-                const unreadMessages = await db.collection('chats').doc(chatId)
-                    .collection('messages')
-                    .where('senderId', '!=', currentUser.uid)
-                    .where('read', '==', false)
-                    .get();
-
-                const batch = db.batch();
-                unreadMessages.forEach(doc => {
-                    batch.update(doc.ref, { read: true });
-                });
-
-                await batch.commit();
-                
-                // Update unread count in chat list
-                await loadChats();
+                if (confirm('Are you sure you want to logout?')) {
+                    // Update user status to offline
+                    if (currentUser) {
+                        await db.collection('users').doc(currentUser.uid).update({
+                            isOnline: false,
+                            lastSeen: new Date()
+                        });
+                    }
+                    
+                    await auth.signOut();
+                    window.location.href = 'index.html';
+                }
             } catch (error) {
-                console.error('Error marking messages as read:', error);
+                console.error('Error logging out:', error);
             }
         }
 
@@ -1010,10 +1044,9 @@
                             isOnline: otherUserData.isOnline || false
                         }
                     ],
-                    lastMessage: '',
+                    lastMessage: 'Say hello! 👋',
                     lastMessageTime: new Date(),
-                    createdAt: new Date(),
-                    unreadCount: 0
+                    createdAt: new Date()
                 };
 
                 const newChatRef = await db.collection('chats').add(chatData);
@@ -1025,7 +1058,7 @@
 
             } catch (error) {
                 console.error('Error adding contact:', error);
-                alert('Error adding contact: ' + error.message);
+                alert('Error adding contact');
             }
         }
 
@@ -1041,19 +1074,6 @@
                         }
                     });
                 });
-
-            // Listen for user status changes
-            db.collection('users').onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === 'modified' && currentChat) {
-                        const userData = change.doc.data();
-                        if (userData.id === currentChat.otherUser.id) {
-                            document.getElementById('chatUserStatus').textContent = userData.isOnline ? 'Online' : 'Offline';
-                            document.getElementById('onlineDot').style.display = userData.isOnline ? 'block' : 'none';
-                        }
-                    }
-                });
-            });
         }
 
         // Format time
@@ -1071,26 +1091,6 @@
             return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
         }
 
-        // Logout
-        async function logout() {
-            try {
-                if (confirm('Are you sure you want to logout?')) {
-                    // Update user status to offline
-                    if (currentUser) {
-                        await db.collection('users').doc(currentUser.uid).update({
-                            isOnline: false,
-                            lastSeen: new Date()
-                        });
-                    }
-                    
-                    await auth.signOut();
-                    window.location.href = 'index.html';
-                }
-            } catch (error) {
-                console.error('Error logging out:', error);
-            }
-        }
-
         // Enter key to send message
         document.getElementById('messageInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -1105,26 +1105,17 @@
             this.style.height = Math.min(this.scrollHeight, 100) + 'px';
         });
 
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            const chatItems = document.querySelectorAll('.chat-item');
-            
-            chatItems.forEach(item => {
-                const chatName = item.querySelector('.chat-name').textContent.toLowerCase();
-                if (chatName.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-
         // Close modal when clicking outside
         window.addEventListener('click', function(e) {
             const modal = document.getElementById('addContactModal');
             if (e.target === modal) {
                 closeAddContactModal();
+            }
+            
+            // Close profile menu when clicking outside
+            const profileMenu = document.getElementById('profileMenu');
+            if (!e.target.closest('.user-avatar') && !e.target.closest('.profile-menu')) {
+                profileMenu.style.display = 'none';
             }
         });
 
