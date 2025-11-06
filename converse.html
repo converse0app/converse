@@ -528,7 +528,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <div class="user-avatar" id="userAvatar" onclick="toggleProfileMenu()">U</div>
+            <div class="user-avatar" id="userAvatar">U</div>
             <div class="header-actions">
                 <button class="header-btn" title="Status">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -540,9 +540,9 @@
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
                 </button>
-                <button class="header-btn" title="Menu">
+                <button class="header-btn" title="Menu" onclick="logout()">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
                     </svg>
                 </button>
             </div>
@@ -568,9 +568,20 @@
             <div class="welcome-icon">💬</div>
             <h1 class="welcome-title">Welcome to Converse</h1>
             <p class="welcome-subtitle">
-                Send and receive messages without keeping your phone online.<br>
-                Use Converse on up to 4 linked devices and 1 phone at the same time.
+                Your email-based messaging app<br>
+                Connect with friends using unique usernames<br>
+                Secure, fast, and easy to use
             </p>
+            <div style="margin-top: 30px; color: #8696a0; font-size: 14px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <span style="font-size: 18px;">👆</span>
+                    <span>Click the + button to add a contact</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 18px;">💬</span>
+                    <span>Start chatting with username: Example-123</span>
+                </div>
+            </div>
         </div>
 
         <div class="chat-header-main hidden" id="chatHeader">
@@ -673,14 +684,13 @@
         let currentChat = null;
         let chats = [];
         let users = [];
-        let contacts = [];
 
         // Check authentication
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
                 await loadUserData();
-                await loadContacts();
+                await loadUsers();
                 await loadChats();
                 setupRealTimeListeners();
             } else {
@@ -688,13 +698,15 @@
             }
         });
 
-        // Load user data
+        // Load user data - REAL FIRST LETTER
         async function loadUserData() {
             try {
                 const userDoc = await db.collection('users').doc(currentUser.uid).get();
                 if (userDoc.exists) {
                     const userData = userDoc.data();
-                    document.getElementById('userAvatar').textContent = userData.firstName.charAt(0).toUpperCase();
+                    // Use REAL first letter from first name
+                    const firstLetter = userData.firstName ? userData.firstName.charAt(0).toUpperCase() : 'U';
+                    document.getElementById('userAvatar').textContent = firstLetter;
                     
                     // Update online status
                     await db.collection('users').doc(currentUser.uid).update({
@@ -707,21 +719,18 @@
             }
         }
 
-        // Load contacts
-        async function loadContacts() {
+        // Load all users
+        async function loadUsers() {
             try {
-                const contactsSnapshot = await db.collection('users')
-                    .where('username', '!=', null)
-                    .get();
-
+                const usersSnapshot = await db.collection('users').get();
                 users = [];
-                contactsSnapshot.forEach(doc => {
+                usersSnapshot.forEach(doc => {
                     if (doc.id !== currentUser.uid) {
                         users.push({ id: doc.id, ...doc.data() });
                     }
                 });
             } catch (error) {
-                console.error('Error loading contacts:', error);
+                console.error('Error loading users:', error);
             }
         }
 
@@ -758,7 +767,7 @@
             }
         }
 
-        // Render chat item
+        // Render chat item - REAL FIRST LETTERS
         function renderChatItem(chat) {
             const otherUser = chat.participantsDetails.find(p => p.id !== currentUser.uid);
             if (!otherUser) return;
@@ -770,10 +779,11 @@
 
             const unreadCount = chat.unreadCount || 0;
             const lastMessage = chat.lastMessage || 'No messages yet';
+            const firstLetter = otherUser.firstName ? otherUser.firstName.charAt(0).toUpperCase() : 'U';
 
             chatItem.innerHTML = `
                 <div class="chat-avatar">
-                    ${otherUser.firstName.charAt(0).toUpperCase()}
+                    ${firstLetter}
                     <div class="online-dot" style="display: ${otherUser.isOnline ? 'block' : 'none'}"></div>
                 </div>
                 <div class="chat-info">
@@ -791,7 +801,7 @@
             chatList.appendChild(chatItem);
         }
 
-        // Open chat
+        // Open chat - REAL FIRST LETTER
         async function openChat(chatId, otherUser) {
             currentChat = { id: chatId, otherUser };
             
@@ -801,9 +811,10 @@
             document.getElementById('messagesContainer').classList.remove('hidden');
             document.getElementById('messageInputContainer').classList.remove('hidden');
             
-            // Update chat header
+            // Update chat header with REAL first letter
+            const firstLetter = otherUser.firstName ? otherUser.firstName.charAt(0).toUpperCase() : 'U';
             document.getElementById('chatUserName').textContent = otherUser.firstName + ' ' + otherUser.lastName;
-            document.getElementById('chatUserAvatar').textContent = otherUser.firstName.charAt(0).toUpperCase();
+            document.getElementById('chatUserAvatar').textContent = firstLetter;
             document.getElementById('chatUserStatus').textContent = otherUser.isOnline ? 'Online' : 'Offline';
             document.getElementById('onlineDot').style.display = otherUser.isOnline ? 'block' : 'none';
             
@@ -953,8 +964,9 @@
                     return;
                 }
 
-                const otherUser = userSnapshot.docs[0];
-                const otherUserData = otherUser.data();
+                const otherUserDoc = userSnapshot.docs[0];
+                const otherUserData = otherUserDoc.data();
+                const otherUserId = otherUserDoc.id;
 
                 // Check if chat already exists
                 const existingChat = await db.collection('chats')
@@ -964,7 +976,7 @@
                 let chatExists = false;
                 existingChat.forEach(doc => {
                     const chatData = doc.data();
-                    if (chatData.participants.includes(otherUser.id)) {
+                    if (chatData.participants.includes(otherUserId)) {
                         chatExists = true;
                     }
                 });
@@ -975,18 +987,23 @@
                     return;
                 }
 
+                // Get current user data
+                const currentUserDoc = await db.collection('users').doc(currentUser.uid).get();
+                const currentUserData = currentUserDoc.data();
+
                 // Create new chat
                 const chatData = {
-                    participants: [currentUser.uid, otherUser.id],
+                    participants: [currentUser.uid, otherUserId],
                     participantsDetails: [
                         {
                             id: currentUser.uid,
-                            firstName: 'You',
-                            lastName: '',
-                            username: 'currentuser'
+                            firstName: currentUserData.firstName,
+                            lastName: currentUserData.lastName,
+                            username: currentUserData.username,
+                            isOnline: true
                         },
                         {
-                            id: otherUser.id,
+                            id: otherUserId,
                             firstName: displayName || otherUserData.firstName,
                             lastName: otherUserData.lastName,
                             username: otherUserData.username,
@@ -995,7 +1012,8 @@
                     ],
                     lastMessage: '',
                     lastMessageTime: new Date(),
-                    createdAt: new Date()
+                    createdAt: new Date(),
+                    unreadCount: 0
                 };
 
                 const newChatRef = await db.collection('chats').add(chatData);
@@ -1007,7 +1025,7 @@
 
             } catch (error) {
                 console.error('Error adding contact:', error);
-                alert('Error adding contact');
+                alert('Error adding contact: ' + error.message);
             }
         }
 
@@ -1051,6 +1069,26 @@
             if (diff < 86400000) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
             return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                if (confirm('Are you sure you want to logout?')) {
+                    // Update user status to offline
+                    if (currentUser) {
+                        await db.collection('users').doc(currentUser.uid).update({
+                            isOnline: false,
+                            lastSeen: new Date()
+                        });
+                    }
+                    
+                    await auth.signOut();
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+            }
         }
 
         // Enter key to send message
