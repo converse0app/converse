@@ -13,55 +13,224 @@
     <!-- EmailJS -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: #f0f2f5;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            position: relative;
         }
 
-        .auth-container {
+        /* Animated Background Elements */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 400px;
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
         }
 
-        .auth-logo {
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .circle-1 {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .circle-2 {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+
+        .circle-3 {
+            width: 60px;
+            height: 60px;
+            bottom: 10%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        /* Left Side Branding */
+        .brand-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            color: #333;
+            position: relative;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .logo h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+        }
+
+        .logo p {
+            font-size: 18px;
+            opacity: 0.8;
+            margin-left: 65px;
+            color: #555;
+        }
+
+        .features {
+            margin-top: 40px;
+            animation: slideInLeft 1.2s ease-out;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 16px;
+            opacity: 0.9;
+            color: #444;
+        }
+
+        .feature i {
+            margin-right: 15px;
+            font-size: 20px;
+            color: #FF6B00;
+        }
+
+        .chat-animation {
+            margin-top: 40px;
+            animation: slideInLeft 1.4s ease-out;
+        }
+
+        .chat-bubble {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px 20px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            max-width: 300px;
+            backdrop-filter: blur(10px);
+            animation: chatPulse 3s infinite;
+            color: #333;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .chat-bubble.right {
+            margin-left: auto;
+            background: rgba(255, 107, 0, 0.2);
+        }
+
+        @keyframes chatPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Right Side Auth Form */
+        .auth-container {
+            width: 450px;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 50px 40px;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            animation: slideInRight 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .auth-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+        }
+
+        .auth-header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 35px;
         }
 
-        .auth-logo h1 {
-            font-size: 32px;
-            color: #00a884;
+        .auth-header h2 {
+            font-size: 28px;
+            color: #333;
             margin-bottom: 8px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
-        .auth-logo p {
-            color: #667781;
+        .auth-header p {
+            color: #666;
             font-size: 14px;
         }
 
         .auth-tabs {
             display: flex;
-            margin-bottom: 24px;
-            background: #f0f2f5;
-            border-radius: 8px;
-            padding: 4px;
+            margin-bottom: 30px;
+            background: #FFF8E1;
+            border-radius: 12px;
+            padding: 5px;
+            position: relative;
+            border: 1px solid #FFE082;
         }
 
         .auth-tab {
@@ -69,87 +238,126 @@
             padding: 12px;
             background: transparent;
             border: none;
-            color: #667781;
+            color: #666;
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1;
         }
 
         .auth-tab.active {
-            background: white;
-            color: #00a884;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .tab-indicator {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            height: calc(100% - 10px);
+            width: calc(50% - 5px);
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(255, 167, 0, 0.3);
+        }
+
+        .tab-login .tab-indicator {
+            transform: translateX(0);
+        }
+
+        .tab-signup .tab-indicator {
+            transform: translateX(100%);
         }
 
         .input-group {
             margin-bottom: 20px;
+            position: relative;
         }
 
         .input-group label {
             display: block;
             margin-bottom: 8px;
-            color: #111b21;
+            color: #333;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .input-group input {
             width: 100%;
             padding: 14px 16px;
-            border: 1px solid #e9edef;
-            border-radius: 8px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
             background: white;
-            color: #111b21;
+            color: #333;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
 
         .input-group input:focus {
             outline: none;
-            border-color: #00a884;
+            border-color: #FFA500;
+            box-shadow: 0 0 0 3px rgba(255, 167, 0, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 40px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 16px;
         }
 
         .auth-btn {
             width: 100%;
-            padding: 14px;
-            background: #00a884;
-            color: white;
+            padding: 15px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #333;
             border: none;
-            border-radius: 8px;
-            font-size: 14px;
+            border-radius: 10px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255, 167, 0, 0.3);
         }
 
         .auth-btn:hover {
-            background: #008f70;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 167, 0, 0.4);
         }
 
-        .google-btn {
+        .auth-btn:active {
+            transform: translateY(0);
+        }
+
+        .auth-btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
             width: 100%;
-            padding: 14px;
-            background: white;
-            color: #111b21;
-            border: 1px solid #e9edef;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
         }
 
-        .google-btn:hover {
-            background: #f8f9fa;
+        .auth-btn:hover::after {
+            left: 100%;
         }
 
         .divider {
             display: flex;
             align-items: center;
-            margin: 20px 0;
-            color: #667781;
+            margin: 25px 0;
+            color: #666;
         }
 
         .divider::before,
@@ -157,7 +365,7 @@
             content: "";
             flex: 1;
             height: 1px;
-            background: #e9edef;
+            background: #E0E0E0;
         }
 
         .divider span {
@@ -165,26 +373,77 @@
             font-size: 12px;
         }
 
-        .error {
-            color: #ff3b30;
-            margin: 12px 0;
+        .google-btn {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: #333;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .google-btn:hover {
+            border-color: #FFA500;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .forgot-password-link {
             text-align: center;
-            font-size: 13px;
-            padding: 10px;
-            background: rgba(255, 59, 48, 0.05);
-            border-radius: 6px;
-            border: 1px solid rgba(255, 59, 48, 0.1);
+            margin-top: 20px;
+        }
+
+        .forgot-password-link a {
+            color: #FFA500;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password-link a:hover {
+            color: #FF8C00;
+            text-decoration: underline;
+        }
+
+        .error {
+            color: #D32F2F;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 14px;
+            padding: 12px;
+            background: rgba(211, 47, 47, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(211, 47, 47, 0.2);
+            font-weight: 500;
+            animation: shake 0.5s ease;
         }
 
         .success {
-            color: #00a884;
-            margin: 12px 0;
+            color: #388E3C;
+            margin: 15px 0;
             text-align: center;
-            font-size: 13px;
-            padding: 10px;
-            background: rgba(0, 168, 132, 0.05);
-            border-radius: 6px;
-            border: 1px solid rgba(0, 168, 132, 0.1);
+            font-size: 14px;
+            padding: 12px;
+            background: rgba(56, 142, 60, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(56, 142, 60, 0.2);
+            font-weight: 500;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
         .hidden {
@@ -192,62 +451,68 @@
         }
 
         .verification-box {
-            background: rgba(0, 168, 132, 0.05);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 168, 132, 0.1);
+            background: rgba(255, 215, 0, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 167, 0, 0.3);
             margin-bottom: 20px;
         }
 
         .verification-box h3 {
-            color: #00a884;
-            margin-bottom: 10px;
-            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 700;
         }
 
         .otp-input {
             font-size: 20px;
             text-align: center;
-            letter-spacing: 8px;
+            letter-spacing: 10px;
             font-weight: bold;
             margin: 15px 0;
             background: white;
-            border: 2px solid #e9edef;
-            border-radius: 8px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
             padding: 12px;
-            color: #111b21;
+            color: #333;
             width: 100%;
         }
 
         .resend-btn {
             background: none;
             border: none;
-            color: #00a884;
+            color: #FFA500;
             cursor: pointer;
             text-decoration: underline;
             margin-top: 10px;
-            font-size: 13px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
-        .forgot-password-link {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .forgot-password-link a {
-            color: #00a884;
-            text-decoration: none;
-            font-size: 13px;
-            cursor: pointer;
+        .resend-btn:hover {
+            color: #FF8C00;
         }
 
         .back-btn {
             background: none;
             border: none;
-            color: #00a884;
+            color: #FFA500;
             cursor: pointer;
             font-size: 14px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            color: #FF8C00;
+            transform: translateX(-3px);
         }
 
         .username-input-container {
@@ -259,23 +524,72 @@
             left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: #667781;
+            color: #666;
             font-weight: bold;
+            font-size: 16px;
         }
 
         .username-input {
-            padding-left: 30px !important;
+            padding-left: 35px !important;
         }
     </style>
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-circle circle-1"></div>
+        <div class="floating-circle circle-2"></div>
+        <div class="floating-circle circle-3"></div>
+    </div>
+
+    <!-- Left Side Branding -->
+    <div class="brand-section">
+        <div class="logo">
+            <h1><i class="fas fa-comments" style="color: #FF6B00;"></i> Converse</h1>
+            <p>Connect with friends in real-time</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <span>End-to-end encrypted messaging</span>
+            </div>
+            <div class="feature">
+                <i class="fas fa-bolt"></i>
+                <span>Lightning fast delivery</span>
+            </div>
+            <div class="feature">
+                <i class="fas fa-users"></i>
+                <span>Group chats with unlimited members</span>
+            </div>
+            <div class="feature">
+                <i class="fas fa-cloud"></i>
+                <span>Cloud sync across all devices</span>
+            </div>
+        </div>
+        
+        <div class="chat-animation">
+            <div class="chat-bubble">
+                Hey! How's it going?
+            </div>
+            <div class="chat-bubble right">
+                Great! Just trying out Converse 😊
+            </div>
+            <div class="chat-bubble">
+                It's amazing, right? So smooth!
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side Auth Form -->
     <div class="auth-container">
-        <div class="auth-logo">
-            <h1>💬 Converse</h1>
-            <p>Connect with friends securely</p>
+        <div class="auth-header">
+            <h2>Welcome Back!</h2>
+            <p>Sign in to continue your conversations</p>
         </div>
 
-        <div class="auth-tabs">
+        <div class="auth-tabs tab-login">
+            <div class="tab-indicator"></div>
             <button class="auth-tab active" onclick="showAuthTab('login')">Login</button>
             <button class="auth-tab" onclick="showAuthTab('signup')">Sign Up</button>
         </div>
@@ -288,12 +602,19 @@
             </div>
             <div class="input-group">
                 <label for="loginPassword">Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                <div class="username-input-container">
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    <button class="password-toggle" onclick="togglePassword('loginPassword')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
-            <button class="auth-btn" onclick="loginWithEmail()">Login to Converse</button>
+            <button class="auth-btn" onclick="loginWithEmail()">
+                <i class="fas fa-sign-in-alt"></i> Login to Converse
+            </button>
             
             <div class="forgot-password-link">
-                <a onclick="showForgotPassword()">Forgot password?</a>
+                <a onclick="showForgotPassword()">Forgot your password?</a>
             </div>
             
             <div class="divider"><span>or continue with</span></div>
@@ -335,10 +656,17 @@
                 </div>
                 <div class="input-group">
                     <label for="signupPassword">Password</label>
-                    <input type="password" id="signupPassword" placeholder="Create a password (min. 6 characters)" required>
+                    <div class="username-input-container">
+                        <input type="password" id="signupPassword" placeholder="Create a password (min. 6 characters)" required>
+                        <button class="password-toggle" onclick="togglePassword('signupPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 
-                <button class="auth-btn" onclick="sendVerificationCode()">Create Account</button>
+                <button class="auth-btn" onclick="sendVerificationCode()">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
                 
                 <div class="divider"><span>or continue with</span></div>
                 
@@ -357,8 +685,12 @@
 
             <!-- Verification Section -->
             <div id="verificationSection" class="hidden">
+                <button class="back-btn" onclick="backToSignupForm()">
+                    <i class="fas fa-arrow-left"></i> Back to Sign Up
+                </button>
+
                 <div class="verification-box">
-                    <h3>🔐 Verify Your Email</h3>
+                    <h3><i class="fas fa-shield-alt"></i> Verify Your Email</h3>
                     <p id="verificationMessage">We've sent a 6-digit verification code to your email</p>
                     
                     <div class="input-group">
@@ -366,7 +698,9 @@
                         <input type="text" id="verificationCode" class="otp-input" placeholder="000000" maxlength="6">
                     </div>
                     
-                    <button class="auth-btn" onclick="verifyAndCreateAccount()">Verify & Create Account</button>
+                    <button class="auth-btn" onclick="verifyAndCreateAccount()">
+                        <i class="fas fa-check-circle"></i> Verify & Create Account
+                    </button>
                     
                     <button class="resend-btn" onclick="resendVerificationCode()">Resend Code</button>
                     
@@ -378,10 +712,12 @@
 
         <!-- Forgot Password Form -->
         <div id="forgotPasswordForm" class="hidden">
-            <button class="back-btn" onclick="showAuthTab('login')">← Back to Login</button>
+            <button class="back-btn" onclick="showAuthTab('login')">
+                <i class="fas fa-arrow-left"></i> Back to Login
+            </button>
 
             <div class="verification-box">
-                <h3>🔒 Reset Your Password</h3>
+                <h3><i class="fas fa-key"></i> Reset Your Password</h3>
                 <p>Enter your email to receive a password reset link</p>
                 
                 <div class="input-group">
@@ -389,7 +725,9 @@
                     <input type="email" id="forgotEmail" placeholder="Enter your email" required>
                 </div>
                 
-                <button class="auth-btn" onclick="sendPasswordReset()">Send Reset Link</button>
+                <button class="auth-btn" onclick="sendPasswordReset()">
+                    <i class="fas fa-paper-plane"></i> Send Reset Link
+                </button>
                 
                 <div class="error" id="forgotError"></div>
                 <div class="success" id="forgotSuccess"></div>
@@ -421,6 +759,11 @@
         let userData = {};
 
         function showAuthTab(tabName) {
+            // Update tab indicator
+            const tabsContainer = document.querySelector('.auth-tabs');
+            tabsContainer.className = `auth-tabs tab-${tabName}`;
+            
+            // Update active tab buttons
             document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.auth-tab').forEach(tab => {
                 if (tab.textContent.includes(tabName === 'login' ? 'Login' : 'Sign Up')) {
@@ -428,6 +771,7 @@
                 }
             });
             
+            // Show/hide forms
             document.getElementById('loginForm').classList.toggle('hidden', tabName !== 'login');
             document.getElementById('signupForm').classList.toggle('hidden', tabName !== 'signup');
             document.getElementById('forgotPasswordForm').classList.add('hidden');
@@ -447,6 +791,12 @@
             clearErrors();
         }
 
+        function backToSignupForm() {
+            document.getElementById('verificationSection').classList.add('hidden');
+            document.getElementById('mainSignupForm').classList.remove('hidden');
+            clearErrors();
+        }
+
         function clearErrors() {
             document.getElementById('loginError').textContent = '';
             document.getElementById('signupError').textContent = '';
@@ -454,6 +804,20 @@
             document.getElementById('forgotError').textContent = '';
             document.getElementById('forgotSuccess').textContent = '';
             document.getElementById('verifySuccess').textContent = '';
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const button = input.parentNode.querySelector('.password-toggle');
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
         }
 
         // Email login
@@ -470,7 +834,7 @@
             }
         }
 
-        // Google login - FIXED WITH REAL PROFILE DATA
+        // Google login
         async function loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             provider.addScope('profile');
@@ -651,7 +1015,7 @@
                     verifyAndCreateAccount();
                 }
             }
-        });
+        }
 
         // Auto-format OTP
         document.getElementById('verificationCode').addEventListener('input', function(e) {
